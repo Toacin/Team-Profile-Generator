@@ -1,37 +1,119 @@
 const fs = require("fs");
 const inquirer = require("inquirer");
+const Employee = require("./lib/Employee")
+const Engineer = require("./lib/Engineer")
+const Intern = require("./lib/Intern")
+const Manager = require("./lib/Manager")
+const generateMarkdown = require("./lib/generateMarkdown")
 
-questions = [
+managerQuestions = [
     {
         message: "What's the team manager's name?",
         name: "managerName"
     },
     {
         message: "What's the team manager's Employee ID?",
-        name: "managerName"
+        name: "managerID"
     },
     {
         message: "What's the team manager's email address?",
-        name: "managerName"
+        name: "managerEmail"
     },
     {
-        message: "What's the team manager's office ?",
-        name: "managerName"
+        message: "What's the team manager's office number?",
+        name: "managerOfficeNumber"
     },
     {
-        message: "What's the team manager's name?",
-        name: "managerName"
-    },
-    {
-        message: "What's team manager's name?",
-        name: "managerName"
-    },
-    {
-        message: "What's your team manager's name?",
-        name: "managerName"
-    },
-    {
-        message: "What's your team manager's name?",
-        name: "managerName"
+        type: "list",
+        message: "What role would would you like to add to your team?",
+        name: "nextRole",
+        choices: ["Engineer", "Intern", "None, I'd like to generate webpage now."] 
     }
 ]
+
+engineerQuestions = [
+    {
+        message: "What's the team engineer's name?",
+        name: "engineerName"
+    },
+    {
+        message: "What's the team engineer's Employee ID?",
+        name: "engineerID"
+    },
+    {
+        message: "What's the team engineer's email address?",
+        name: "engineerEmail"
+    },
+    {
+        message: "What's the team engineer's GitHub username?",
+        name: "engineerGitHub"
+    },
+    {
+        type: "list",
+        message: "What role would would you like to add to your team?",
+        name: "nextRole",
+        choices: ["Engineer", "Intern", "None, I'd like to generate webpage now."] 
+    }
+]
+
+internQuestions = [
+    {
+        message: "What's the team intern's name?",
+        name: "internName"
+    },
+    {
+        message: "What's the team intern's Employee ID?",
+        name: "internID"
+    },
+    {
+        message: "What's the team intern's email address?",
+        name: "internEmail"
+    },
+    {
+        message: "What's the team intern's school?",
+        name: "internSchool"
+    },
+    {
+        type: "list",
+        message: "What role would would you like to add to your team?",
+        name: "nextRole",
+        choices: ["Engineer", "Intern", "None, I'd like to generate webpage now."] 
+    }
+]
+
+function init() {
+    inquirer.prompt(managerQuestions)
+    .then((answers) => {
+        let newManager = new Manager(answers.managerName, answers.managerID, answers.managerEmail, answers.managerOfficeNumber);
+        console.log(newManager);
+        if (answers.nextRole === "Engineer") engineerPrompt();
+        else if (answers.nextRole === "Intern") internPrompt();
+        else {
+            fs.writeFile("./dist/index.html", generateMarkdown(), (err) => err ? console.log("failed") : console.log("success"));
+        }
+    })
+}
+
+function engineerPrompt() {
+    inquirer.prompt(engineerQuestions)
+    .then((answers) => {
+        if (answers.nextRole === "Engineer") engineerPrompt();
+        else if (answers.nextRole === "Intern") internPrompt();
+        else {
+            fs.writeFile("./dist/index.html", generateMarkdown(), (err) => err ? console.log("failed") : console.log("success"));
+        }
+    })
+}
+
+function internPrompt() {
+    inquirer.prompt(internQuestions)
+    .then((answers) => {
+        if (answers.nextRole === "Engineer") engineerPrompt();
+        else if (answers.nextRole === "Intern") internPrompt();
+        else {
+            fs.writeFile("./dist/index.html", generateMarkdown(), (err) => err ? console.log("failed") : console.log("success"));
+        }
+    })
+}
+
+init();
