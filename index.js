@@ -83,20 +83,20 @@ internQuestions = [
 
 const membersObjArray = [];
 
+function checkNextRole(answers) {
+    if (answers.nextRole === "Engineer") engineerPrompt();
+    else if (answers.nextRole === "Intern") internPrompt();
+    else {
+        fs.writeFile("./dist/index.html", generateHTML(membersObjArray), (err) => err ? console.log("failed") : console.log("success"));
+    };
+};
+
 function init() {
     inquirer.prompt(managerQuestions)
     .then((answers) => {
         let newManager = new Manager(answers.managerName, answers.managerID, answers.managerEmail, answers.managerOfficeNumber);
-
-        console.log(newManager.getRole());
-
         membersObjArray.push(newManager);
-
-        if (answers.nextRole === "Engineer") engineerPrompt();
-        else if (answers.nextRole === "Intern") internPrompt();
-        else {
-            fs.writeFile("./dist/index.html", generateHTML(membersObjArray), (err) => err ? console.log("failed") : console.log("success"));
-        }
+        checkNextRole(answers);
     })
 };
 
@@ -104,14 +104,8 @@ function engineerPrompt() {
     inquirer.prompt(engineerQuestions)
     .then((answers) => {
         let newEngineer = new Engineer(answers.engineerName, answers.engineerID, answers.engineerEmail, answers.engineerGitHub);
-        
         membersObjArray.push(newEngineer);
-        
-        if (answers.nextRole === "Engineer") engineerPrompt();
-        else if (answers.nextRole === "Intern") internPrompt();
-        else {
-            fs.writeFile("./dist/index.html", generateHTML(membersObjArray), (err) => err ? console.log("failed") : console.log("success"));
-        }
+        checkNextRole(answers);
     })
 };
 
@@ -119,14 +113,8 @@ function internPrompt() {
     inquirer.prompt(internQuestions)
     .then((answers) => {
         let newIntern = new Intern(answers.internName, answers.internID, answers.internEmail, answers.internSchool);
-        
         membersObjArray.push(newIntern);
-        
-        if (answers.nextRole === "Engineer") engineerPrompt();
-        else if (answers.nextRole === "Intern") internPrompt();
-        else {
-            fs.writeFile("./dist/index.html", generateHTML(membersObjArray), (err) => err ? console.log("failed") : console.log("success"));
-        }
+        checkNextRole(answer);
     })
 };
 
