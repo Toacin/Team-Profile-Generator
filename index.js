@@ -82,14 +82,9 @@ internQuestions = [
 ];
 
 const membersObjArray = [];
+let sortedMembersObjArray = [];
 
-function checkNextRole(answers) {
-    if (answers.nextRole === "Engineer") engineerPrompt();
-    else if (answers.nextRole === "Intern") internPrompt();
-    else {
-        fs.writeFile("./dist/index.html", generateHTML(membersObjArray), (err) => err ? console.log("failed") : console.log("success"));
-    };
-};
+
 
 function init() {
     inquirer.prompt(managerQuestions)
@@ -114,8 +109,33 @@ function internPrompt() {
     .then((answers) => {
         let newIntern = new Intern(answers.internName, answers.internID, answers.internEmail, answers.internSchool);
         membersObjArray.push(newIntern);
-        checkNextRole(answer);
+        checkNextRole(answers);
     })
+};
+
+function checkNextRole(answers) {
+    if (answers.nextRole === "Engineer") engineerPrompt();
+    else if (answers.nextRole === "Intern") internPrompt();
+    else {
+        fs.writeFile("./dist/index.html", generateHTML(sortMembers(membersObjArray)), (err) => err ? console.log("failed") : console.log("success"));
+    };
+};
+
+function sortMembers(data) {
+    const engineers = [];
+    const manager = [];
+    const intern = [];
+    data.forEach((element) => {
+        switch (element.getRole()) {
+            case "Manager": manager.push(element);
+                break;
+            case "Engineer": engineers.push(element);
+                break;
+            case "Intern": intern.push(element);
+                break;
+        }
+    })
+    return [...manager, ...engineers, ...intern];
 };
 
 init();
